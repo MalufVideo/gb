@@ -43,11 +43,11 @@ const Infrastructure: React.FC = () => {
         <div>
           <figure className="w-full">
             <div className="rounded border border-slate-200 overflow-hidden bg-slate-100">
-               <img 
-                 src="https://images.unsplash.com/photo-1595411425732-e69c1deb9f7d?q=80&w=2070&auto=format&fit=crop" 
-                 alt="Camarim VIP" 
-                 className="w-full h-48 object-cover"
-               />
+              <img
+                src="/img/camarim.webp"
+                alt="Camarim VIP"
+                className="w-full h-48 object-cover"
+              />
             </div>
             <figcaption className="text-xs text-slate-500 mt-2 italic">
               Figura 2: Camarim e área de convivência disponível para a equipe.

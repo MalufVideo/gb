@@ -13,13 +13,10 @@ const Footer: React.FC = () => {
           </ul>
         </div>
         <div className="text-right flex flex-col justify-end">
-          <p className="mb-1">ON + AV DESIGN LTDA</p>
-          <p>CNPJ: 00.000.000/0001-00</p>
-          <p>contato@onavdesign.com.br</p>
+          <a href="https://onav.com.br" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-brand-accent transition-colors font-medium">
+            onav.com.br
+          </a>
         </div>
-      </div>
-      <div className="text-center mt-8 pt-4 border-t border-slate-200 text-[10px] text-slate-400">
-        Gerado digitalmente em {new Date().toLocaleDateString()}
       </div>
     </footer>
   );

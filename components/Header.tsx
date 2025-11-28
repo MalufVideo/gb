@@ -6,12 +6,9 @@ const Header: React.FC = () => {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         {/* Logo Area */}
         <div>
-          <div className="text-3xl font-display font-bold tracking-tighter text-slate-900">
-            ON <span className="text-slate-400">+</span> AV <span className="text-xs align-top opacity-70 text-slate-500 font-sans">DESIGN</span>
-          </div>
-          <div className="text-xs text-slate-400 mt-1 uppercase tracking-widest">Tecnologia Criativa</div>
+          <img src="/img/on+av_logo_v3.png" alt="ON + AV Design" className="h-12 w-auto object-contain" />
         </div>
-        
+
         {/* Document Meta */}
         <div className="text-right">
           <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wide">Proposta Comercial</h2>

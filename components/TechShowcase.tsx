@@ -13,10 +13,10 @@ const TechShowcase: React.FC = () => {
         <div>
           <h3 className="text-lg font-bold text-slate-800 mb-3">Ecossistema Disguise</h3>
           <p className="text-slate-600 leading-relaxed text-justify mb-4 text-sm">
-            Para um evento que busca encantamento e engajamento de 52k usuários, a escolha do servidor de mídia é crucial. 
+            Para um evento que busca encantamento e engajamento de 52k usuários, a escolha do servidor de mídia é crucial.
             Nossa proposta baseia-se na plataforma <strong>Disguise</strong>, o padrão mundial para grandes shows e broadcasts televisivos.
           </p>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="bg-white p-4 rounded border border-slate-200 shadow-sm">
               <div className="flex items-center gap-2 mb-2 text-slate-800">
@@ -58,23 +58,23 @@ const TechShowcase: React.FC = () => {
                   <div className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Pixel Pitch</div>
                   <div className="text-xl font-display font-bold text-slate-900">2.6mm <span className="text-sm text-slate-500 font-sans font-normal">HDR</span></div>
                 </div>
-                 <div>
+                <div>
                   <div className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Taxa de Atualização</div>
                   <div className="text-xl font-display font-bold text-slate-900">7680 Hz</div>
                 </div>
                 <div>
                   <div className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Resolução</div>
-                  <div className="text-xl font-display font-bold text-slate-900">4K Ready</div>
+                  <div className="text-xl font-display font-bold text-slate-900">6K Ready</div>
                 </div>
               </div>
             </div>
 
             <div className="w-full md:w-1/2">
-               <figure className="w-full">
+              <figure className="w-full">
                 <div className="aspect-video bg-slate-800 rounded overflow-hidden border border-slate-300 relative shadow-inner">
-                  <img 
-                    src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2070&auto=format&fit=crop" 
-                    alt="Parede de LED 16x5m" 
+                  <img
+                    src="/img/estudio_volume_led.webp"
+                    alt="Parede de LED 16x5m"
                     className="w-full h-full object-cover opacity-90"
                   />
                   {/* Overlay for technical look */}

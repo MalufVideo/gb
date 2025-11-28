@@ -8,8 +8,8 @@ const Extras: React.FC = () => {
         <PlusCircle size={14} />
         Opcionais de Upgrade (Sob Consulta)
       </h3>
-      
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
         <div>
           <h4 className="font-bold text-slate-900">Movimentação de Câmera</h4>
           <p className="text-slate-500 mt-1">Grua Telescópica, Cammate ou Steadicam.</p>
@@ -19,8 +19,12 @@ const Extras: React.FC = () => {
           <p className="text-slate-500 mt-1">Set de Lentes Prime para look cinematográfico.</p>
         </div>
         <div>
-          <h4 className="font-bold text-slate-900">Canais Extras</h4>
-          <p className="text-slate-500 mt-1">Câmeras adicionais para cobertura de plateia.</p>
+          <h4 className="font-bold text-slate-900">Câmeras Extras</h4>
+          <p className="text-slate-500 mt-1">Câmeras adicionais para cobertura ampla e opções de diferentes câmeras.</p>
+        </div>
+        <div>
+          <h4 className="font-bold text-slate-900">Conteúdo</h4>
+          <p className="text-slate-500 mt-1">Criação de conteúdo 2D e 3D para LED e Realidade Aumentada.</p>
         </div>
       </div>
     </section>
