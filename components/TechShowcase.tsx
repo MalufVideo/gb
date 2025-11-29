@@ -87,6 +87,55 @@ const TechShowcase: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* Second LED Wall Focus */}
+        <div className="mt-8 bg-slate-50 p-6 rounded-lg border border-slate-200">
+          <div className="flex flex-col md:flex-row-reverse gap-6 items-center">
+            <div className="flex-1">
+              <h3 className="text-lg font-bold text-slate-900 mb-2">Painel de LED Reto</h3>
+              <p className="text-sm text-slate-600 mb-6 leading-relaxed">
+                Complementando o cenário principal, oferecemos um painel reto de alta resolução, ideal para apresentações, logos e conteúdos auxiliares com a mesma qualidade de imagem.
+              </p>
+
+              {/* Specs Grid */}
+              <div className="grid grid-cols-2 gap-y-4 gap-x-8">
+                <div>
+                  <div className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Dimensões Totais</div>
+                  <div className="text-xl font-display font-bold text-slate-900">8m x 4m</div>
+                </div>
+                <div>
+                  <div className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Pixel Pitch</div>
+                  <div className="text-xl font-display font-bold text-slate-900">2.6mm <span className="text-sm text-slate-500 font-sans font-normal">HDR</span></div>
+                </div>
+                <div>
+                  <div className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Taxa de Atualização</div>
+                  <div className="text-xl font-display font-bold text-slate-900">7680 Hz</div>
+                </div>
+                <div>
+                  <div className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Resolução</div>
+                  <div className="text-xl font-display font-bold text-slate-900">4K Ready</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="w-full md:w-1/2">
+              <figure className="w-full">
+                <div className="aspect-video bg-slate-800 rounded overflow-hidden border border-slate-300 relative shadow-inner">
+                  <img
+                    src="/img/estudio2.webp"
+                    alt="Painel de LED Reto 8x4m"
+                    className="w-full h-full object-cover opacity-90"
+                  />
+                  {/* Overlay for technical look */}
+                  <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0)_1px,transparent_1px)] bg-[size:20px_20px] opacity-20 pointer-events-none"></div>
+                </div>
+                <figcaption className="text-[10px] text-slate-400 mt-2 text-center uppercase tracking-widest">
+                  Fig. 2: Configuração Reta 8x4m
+                </figcaption>
+              </figure>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );

@@ -13,7 +13,7 @@ const Pricing: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        
+
         {/* Option A */}
         <div className="border border-slate-200 rounded-sm overflow-hidden flex flex-col bg-white">
           <div className="bg-slate-50 p-5 border-b border-slate-200">
@@ -23,17 +23,19 @@ const Pricing: React.FC = () => {
           <div className="p-6 flex-1 bg-white">
             <ul className="text-sm space-y-3 text-slate-600 mb-6 list-disc pl-4 marker:text-slate-300">
               <li>Painel de LED 16x5m (2.6mm HDR)</li>
+              <li>Painel de LED 4k 2.6mm HDR 8x4m</li>
               <li>1x Servidor Disguise VX</li>
               <li>3x Câmeras Sony FX6 + Tripés</li>
               <li>Switcher Blackmagic ATEM 2M/E</li>
               <li>Equipe Completa (Direção, Operação)</li>
               <li>Pacote de Áudio (7 Mics + Console)</li>
+              <li>Internet Fibra conexao com redundancia ativa</li>
             </ul>
           </div>
           <div className="bg-white p-5 border-t border-slate-100">
             <div className="flex justify-between items-center mb-1 text-sm text-slate-500">
               <span>Vídeo + Estúdio</span>
-              <span>{formatCurrency(108637.50)}</span>
+              <span>{formatCurrency(112000.00)}</span>
             </div>
             <div className="flex justify-between items-center mb-3 text-sm text-slate-500">
               <span>Pacote Áudio</span>
@@ -41,7 +43,7 @@ const Pricing: React.FC = () => {
             </div>
             <div className="flex justify-between items-center pt-3 border-t border-slate-200 mt-2">
               <span className="font-bold text-slate-900">TOTAL</span>
-              <span className="font-bold text-2xl text-slate-900">{formatCurrency(116637.50)}</span>
+              <span className="font-bold text-2xl text-slate-900">{formatCurrency(120000.00)}</span>
             </div>
           </div>
         </div>
@@ -63,9 +65,9 @@ const Pricing: React.FC = () => {
             </ul>
           </div>
           <div className="bg-white p-5 border-t border-slate-100">
-             <div className="flex justify-between items-center mb-1 text-sm text-slate-500">
+            <div className="flex justify-between items-center mb-1 text-sm text-slate-500">
               <span>Vídeo + Estúdio (xR)</span>
-              <span>{formatCurrency(137872.50)}</span>
+              <span>{formatCurrency(141235.00)}</span>
             </div>
             <div className="flex justify-between items-center mb-3 text-sm text-slate-500">
               <span>Pacote Áudio</span>
@@ -73,7 +75,7 @@ const Pricing: React.FC = () => {
             </div>
             <div className="flex justify-between items-center pt-3 border-t border-slate-200 mt-2">
               <span className="font-bold text-slate-900">TOTAL</span>
-              <span className="font-bold text-2xl text-slate-900">{formatCurrency(145872.50)}</span>
+              <span className="font-bold text-2xl text-slate-900">{formatCurrency(149235.00)}</span>
             </div>
           </div>
         </div>
