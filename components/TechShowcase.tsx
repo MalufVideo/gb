@@ -59,10 +59,6 @@ const TechShowcase: React.FC = () => {
                   <div className="text-xl font-display font-bold text-slate-900">2.6mm <span className="text-sm text-slate-500 font-sans font-normal">HDR</span></div>
                 </div>
                 <div>
-                  <div className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Taxa de Atualização</div>
-                  <div className="text-xl font-display font-bold text-slate-900">7680 Hz</div>
-                </div>
-                <div>
                   <div className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Resolução</div>
                   <div className="text-xl font-display font-bold text-slate-900">6K Ready</div>
                 </div>
@@ -106,10 +102,6 @@ const TechShowcase: React.FC = () => {
                 <div>
                   <div className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Pixel Pitch</div>
                   <div className="text-xl font-display font-bold text-slate-900">2.6mm <span className="text-sm text-slate-500 font-sans font-normal">HDR</span></div>
-                </div>
-                <div>
-                  <div className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Taxa de Atualização</div>
-                  <div className="text-xl font-display font-bold text-slate-900">7680 Hz</div>
                 </div>
                 <div>
                   <div className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Resolução</div>
