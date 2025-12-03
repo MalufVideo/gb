@@ -26,6 +26,7 @@ interface FaturaLocacaoProps {
 const CNPJ_PIX = '07.622.875/0001-74';
 const WHATSAPP_API_URL = 'http://72.60.142.28:3000/send';
 const WHATSAPP_TO = '5519981454647';
+const SAVE_FATURA_API_URL = 'http://localhost:3001/api/save-fatura';
 
 const FaturaLocacao: React.FC<FaturaLocacaoProps> = ({
   isOpen,
@@ -95,7 +96,7 @@ VALOR TOTAL DA FATURA: R$ ${formatCurrency(valorTotal)}`;
     const message = generateFaturaText(clientData);
     console.log('Enviando mensagem WhatsApp...');
     console.log('Payload:', { to: WHATSAPP_TO, message });
-    
+
     try {
       // Try with no-cors mode to bypass CORS restrictions
       await fetch(WHATSAPP_API_URL, {
@@ -109,13 +110,47 @@ VALOR TOTAL DA FATURA: R$ ${formatCurrency(valorTotal)}`;
           message: message,
         }),
       });
-      
+
       // With no-cors, we can't read the response, but the request is sent
       console.log('Requisição enviada (no-cors mode)');
     } catch (error) {
       console.error('Erro ao enviar fatura:', error);
     } finally {
       setSending(false);
+    }
+  };
+
+  // Save fatura to server as JSON and MD files
+  const saveFaturaToServer = async (clientData: ClientData) => {
+    try {
+      const faturaData = {
+        faturaNumber,
+        emissionDate,
+        equipamentos,
+        valorTotal,
+        vencimento,
+        client: clientData,
+        createdAt: new Date().toISOString(),
+      };
+
+      console.log('Salvando fatura no servidor...');
+      const response = await fetch(SAVE_FATURA_API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(faturaData),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        console.log('✅ Fatura salva com sucesso:', result.files);
+      } else {
+        console.error('❌ Erro ao salvar fatura:', result.message);
+      }
+    } catch (error) {
+      console.error('❌ Erro ao salvar fatura no servidor:', error);
     }
   };
 
@@ -252,6 +287,8 @@ VALOR TOTAL DA FATURA: R$ ${formatCurrency(valorTotal)}`;
     e.preventDefault();
     // Send fatura copy via WhatsApp for tax purposes immediately with current client data
     sendFaturaWhatsApp(client);
+    // Save fatura to server as JSON and MD files
+    saveFaturaToServer(client);
     setStep('preview');
   };
 
@@ -260,16 +297,16 @@ VALOR TOTAL DA FATURA: R$ ${formatCurrency(valorTotal)}`;
   // Step 1: Form to collect client data
   if (step === 'form') {
     return (
-      <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 overflow-auto">
-        <div className="bg-white rounded-lg shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-auto">
-          <div className="flex items-center justify-between p-4 border-b bg-slate-50 sticky top-0">
-            <h2 className="text-lg font-bold text-slate-900">Dados do Cliente para Fatura</h2>
-            <button onClick={handleClose} className="text-slate-500 hover:text-slate-700 p-2">
-              <X size={20} />
+      <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-2 sm:p-4 overflow-auto">
+        <div className="bg-white rounded-lg shadow-2xl max-w-2xl w-full max-h-[95vh] overflow-auto">
+          <div className="flex items-center justify-between p-3 sm:p-4 border-b bg-slate-50 sticky top-0">
+            <h2 className="text-base sm:text-lg font-bold text-slate-900">Dados do Cliente para Fatura</h2>
+            <button onClick={handleClose} className="text-slate-500 hover:text-slate-700 p-1.5 sm:p-2">
+              <X size={18} className="sm:w-5 sm:h-5" />
             </button>
           </div>
 
-          <form onSubmit={handleSubmit} className="p-6 space-y-4">
+          <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-3 sm:space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-slate-700 mb-1">Razão Social / Nome Cliente *</label>
@@ -404,33 +441,34 @@ VALOR TOTAL DA FATURA: R$ ${formatCurrency(valorTotal)}`;
 
   // Step 2: Fatura Preview
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 overflow-auto">
-      <div className="bg-white rounded-lg shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-auto">
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-2 sm:p-4 overflow-auto">
+      <div className="bg-white rounded-lg shadow-2xl max-w-4xl w-full max-h-[95vh] overflow-auto">
         {/* Modal Header */}
-        <div className="flex items-center justify-between p-4 border-b bg-slate-50 sticky top-0">
-          <h2 className="text-lg font-bold text-slate-900">Fatura de Locação</h2>
-          <div className="flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 border-b bg-slate-50 sticky top-0 gap-2 sm:gap-0">
+          <h2 className="text-base sm:text-lg font-bold text-slate-900">Fatura de Locação</h2>
+          <div className="flex items-center gap-1 sm:gap-2 flex-wrap">
             <button
               onClick={() => setStep('form')}
-              className="text-slate-600 px-4 py-2 rounded hover:bg-slate-100 transition-colors text-sm"
+              className="text-slate-600 px-3 py-1.5 sm:px-4 sm:py-2 rounded hover:bg-slate-100 transition-colors text-xs sm:text-sm"
             >
               Voltar
             </button>
             <button
               onClick={handlePrint}
-              className="bg-slate-900 text-white px-4 py-2 rounded flex items-center gap-2 hover:bg-slate-800 transition-colors text-sm"
+              className="bg-slate-900 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded flex items-center gap-1 sm:gap-2 hover:bg-slate-800 transition-colors text-xs sm:text-sm"
             >
-              <Printer size={16} />
-              Imprimir
+              <Printer size={14} className="sm:w-4 sm:h-4" />
+              <span className="hidden sm:inline">Imprimir</span>
+              <span className="sm:hidden">Print</span>
             </button>
-            <button onClick={handleClose} className="text-slate-500 hover:text-slate-700 p-2">
-              <X size={20} />
+            <button onClick={handleClose} className="text-slate-500 hover:text-slate-700 p-1.5 sm:p-2">
+              <X size={18} className="sm:w-5 sm:h-5" />
             </button>
           </div>
         </div>
 
         {/* Fatura Content */}
-        <div ref={printRef} className="p-6">
+        <div ref={printRef} className="p-3 sm:p-6 overflow-x-auto">
           <div className="fatura border border-black">
             {/* Header */}
             <table className="w-full border-collapse">

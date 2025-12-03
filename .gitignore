@@ -12,6 +12,10 @@ dist
 dist-ssr
 *.local
 
+# Server files - saved invoices
+server/faturas/*.json
+server/faturas/*.md
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
