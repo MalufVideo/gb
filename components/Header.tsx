@@ -12,8 +12,8 @@ const Header: React.FC = () => {
         {/* Document Meta */}
         <div className="text-right">
           <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wide">Proposta Comercial</h2>
-          <p className="text-slate-500 font-mono text-xs mt-1">REF: #2026-VIP-IPIRANGA</p>
-          <p className="text-slate-500 font-mono text-xs">DATA: 25/05/2025</p>
+          <p className="text-slate-500 font-mono text-xs mt-1">REF: #2025-GB-ENTREVISTAS</p>
+          <p className="text-slate-500 font-mono text-xs">DATA: 02/12/2025</p>
         </div>
       </div>
     </header>
