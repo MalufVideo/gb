@@ -45,7 +45,7 @@ const Hero: React.FC = () => {
               <Calendar size={14} />
               <span className="text-xs font-bold uppercase tracking-wider">Execução</span>
             </div>
-            <p className="font-medium text-white">03 - 04 Dez</p>
+            <p className="font-medium text-white">04, 09, 18 Dez</p>
             <p className="text-sm text-slate-400">2025</p>
           </div>
         </div>

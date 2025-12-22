@@ -25,17 +25,37 @@ const Timeline: React.FC = () => {
                 <span className="text-slate-500 text-xs">Reconhecimento do local e preparação do setup.</span>
               </td>
               <td className="px-6 py-4 text-right">
-                <span className="inline-block px-2 py-1 bg-slate-200 text-slate-600 rounded text-xs font-bold">PREVISTO</span>
+                <span className="inline-block px-2 py-1 bg-emerald-100 text-emerald-700 rounded text-xs font-bold">REALIZADO</span>
               </td>
             </tr>
             <tr className="bg-slate-50">
-              <td className="px-6 py-4 font-mono text-brand-accent font-bold">04/12/2025</td>
+              <td className="px-6 py-4 font-mono text-slate-900 font-bold">04/12/2025</td>
               <td className="px-6 py-4">
-                <strong className="block text-brand-accent">Filmagem</strong>
+                <strong className="block text-slate-900">Filmagem (Dia 1)</strong>
                 <span className="text-slate-500 text-xs">Gravação das entrevistas com projeção.</span>
               </td>
               <td className="px-6 py-4 text-right">
-                <span className="inline-block px-2 py-1 bg-brand-accent/10 text-brand-accent border border-brand-accent/20 rounded text-xs font-bold">EVENTO</span>
+                <span className="inline-block px-2 py-1 bg-emerald-100 text-emerald-700 rounded text-xs font-bold">REALIZADO</span>
+              </td>
+            </tr>
+            <tr>
+              <td className="px-6 py-4 font-mono text-slate-600">09/12/2025</td>
+              <td className="px-6 py-4">
+                <strong className="block text-slate-900">Filmagem (Dia 2)</strong>
+                <span className="text-slate-500 text-xs">Continuação das gravações.</span>
+              </td>
+              <td className="px-6 py-4 text-right">
+                <span className="inline-block px-2 py-1 bg-emerald-100 text-emerald-700 rounded text-xs font-bold">REALIZADO</span>
+              </td>
+            </tr>
+            <tr className="bg-slate-50">
+              <td className="px-6 py-4 font-mono text-slate-600">18/12/2025</td>
+              <td className="px-6 py-4">
+                <strong className="block text-slate-900">Filmagem (Dia 3)</strong>
+                <span className="text-slate-500 text-xs">Finalização das gravações.</span>
+              </td>
+              <td className="px-6 py-4 text-right">
+                <span className="inline-block px-2 py-1 bg-emerald-100 text-emerald-700 rounded text-xs font-bold">REALIZADO</span>
               </td>
             </tr>
           </tbody>

@@ -1,5 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { X, Printer, ArrowRight, Send } from 'lucide-react';
+import html2pdf from 'html2pdf.js';
 
 interface ClientData {
   razaoSocial: string;
@@ -13,18 +14,26 @@ interface ClientData {
   telefone: string;
 }
 
+interface Equipment {
+  quantity: number;
+  description: string;
+  days: number;
+}
+
 interface FaturaLocacaoProps {
   isOpen: boolean;
   onClose: () => void;
   faturaNumber: string;
   emissionDate: string;
-  equipamentos: string[];
+  rentalPeriod: string;
+  equipamentos: Equipment[];
   valorTotal: number;
   vencimento: string;
 }
 
 const CNPJ_PIX = '07.622.875/0001-74';
 const WHATSAPP_API_URL = 'http://72.60.142.28:3000/send';
+const WHATSAPP_API_PDF_URL = 'http://72.60.142.28:3000/send-pdf';
 const WHATSAPP_TO = '5519981454647';
 
 const FaturaLocacao: React.FC<FaturaLocacaoProps> = ({
@@ -32,6 +41,7 @@ const FaturaLocacao: React.FC<FaturaLocacaoProps> = ({
   onClose,
   faturaNumber,
   emissionDate,
+  rentalPeriod,
   equipamentos,
   valorTotal,
   vencimento,
@@ -57,10 +67,13 @@ const FaturaLocacao: React.FC<FaturaLocacaoProps> = ({
 
   // Generate text content for WhatsApp
   const generateFaturaText = (clientData: ClientData) => {
-    const equipList = equipamentos.map(e => `- Locacao de: ${e}`).join('\n');
-    
+    const equipList = equipamentos.map(e =>
+      `- ${e.quantity}x ${e.description} (${e.days} dias)`
+    ).join('\n');
+
     return `FATURA DE LOCACAO No: ${faturaNumber}
 Emissao: ${emissionDate}
+Periodo: ${rentalPeriod}
 
 AV DESIGN.TV PRODUCOES LTDA
 RUA AL JAU, 555, AP 42, JARDIM PAULISTA, SAO PAULO
@@ -83,35 +96,315 @@ CONDICOES DE PAGAMENTO:
 BANCO DO BRASIL AG 052-3 C/C 51.592-2
 PIX (CNPJ): ${CNPJ_PIX}
 
-DADOS DA LOCACAO
+DADOS DA LOCACAO (${rentalPeriod})
 ${equipList}
 
 VALOR TOTAL DA FATURA: R$ ${formatCurrency(valorTotal)}`;
   };
 
-  // Send fatura via WhatsApp API
+  // Generate PDF from invoice HTML
+  const generatePDF = async (clientData: ClientData): Promise<string | null> => {
+    try {
+      // Create a temporary div with the invoice content
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = `
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <meta charset="UTF-8">
+            <style>
+              * { margin: 0; padding: 0; box-sizing: border-box; }
+              body {
+                font-family: Arial, sans-serif;
+                font-size: 11px;
+                color: #000;
+                padding: 20px;
+              }
+              table { width: 100%; border-collapse: collapse; }
+              td, th { border: 1px solid #000; padding: 4px 6px; }
+              .font-bold { font-weight: bold; }
+              .text-center { text-align: center; }
+              .text-right { text-align: right; }
+              .text-lg { font-size: 16px; }
+              .text-xl { font-size: 18px; }
+              .text-2xl { font-size: 22px; }
+              .text-sm { font-size: 12px; }
+              .text-xs { font-size: 10px; }
+              .text-9 { font-size: 9px; }
+              .text-10 { font-size: 10px; }
+              .text-red-600 { color: #dc2626; }
+              .text-blue-600 { color: #2563eb; }
+              .text-gray-600 { color: #4b5563; }
+              .bg-gray-100 { background-color: #f3f4f6; }
+              .bg-gray-50 { background-color: #f9fafb; }
+              .mt-1 { margin-top: 4px; }
+              .mt--1 { margin-top: -1px; }
+              .p-1 { padding: 4px; }
+              .p-2 { padding: 8px; }
+              .w-40 { width: 160px; }
+              .w-1-4 { width: 25%; }
+              .w-1-2 { width: 50%; }
+            </style>
+          </head>
+          <body>
+            <div class="fatura" style="border: 1px solid #000;">
+              <!-- Header -->
+              <table>
+                <tbody>
+                  <tr>
+                    <td style="border: 1px solid #000; padding: 8px; width: 50%;" rowspan="2">
+                      <div style="font-weight: bold; font-size: 12px;">AV DESIGN.TV PRODUÇÕES LTDA</div>
+                    </td>
+                    <td style="border: 1px solid #000; padding: 8px; text-align: center;">
+                      <div style="font-weight: bold;">AV DESIGN</div>
+                      <div style="font-size: 9px; margin-top: 4px;">
+                        RUA AL JAU, 555, AP 42, JARDIM PAULISTA, SAO PAULO<br />
+                        SP - CEP 01420-001<br />
+                        CNPJ 07.622.875/0001-74 | IM 6.149.469-0
+                      </div>
+                    </td>
+                    <td style="border: 1px solid #000; padding: 8px; text-align: center; font-weight: bold;">
+                      <div style="font-size: 16px;">FATURA DE LOCAÇÃO</div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="border: 1px solid #000; padding: 8px; text-align: center;" colspan="2">
+                      <div style="font-size: 22px; font-weight: bold;">Nº: ${faturaNumber}</div>
+                      <div style="font-size: 12px; margin-top: 4px;">Emissão: ${emissionDate}</div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <!-- Destinatário -->
+              <table style="margin-top: -1px;">
+                <tbody>
+                  <tr>
+                    <td colspan="5" style="border: 1px solid #000; padding: 4px; background-color: #f3f4f6; font-weight: bold; font-size: 10px;">DESTINATÁRIO</td>
+                  </tr>
+                  <tr>
+                    <td style="border: 1px solid #000; padding: 4px; font-size: 10px;" colspan="3">
+                      <div style="font-size: 9px; color: #4b5563;">Razão Social / Nome Cliente</div>
+                      <div style="font-weight: bold;">${clientData.razaoSocial.toUpperCase()}</div>
+                    </td>
+                    <td style="border: 1px solid #000; padding: 4px; font-size: 10px;" colspan="2">
+                      <div style="font-size: 9px; color: #4b5563;">CNPJ / CPF</div>
+                      <div>${clientData.cnpjCpf || '-'}</div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="border: 1px solid #000; padding: 4px; font-size: 10px;" colspan="2">
+                      <div style="font-size: 9px; color: #4b5563;">Endereço</div>
+                      <div>${clientData.endereco}</div>
+                    </td>
+                    <td style="border: 1px solid #000; padding: 4px; font-size: 10px;">
+                      <div style="font-size: 9px; color: #4b5563;">Bairro</div>
+                      <div>${clientData.bairro}</div>
+                    </td>
+                    <td style="border: 1px solid #000; padding: 4px; font-size: 10px;">
+                      <div style="font-size: 9px; color: #4b5563;">CEP</div>
+                      <div>${clientData.cep}</div>
+                    </td>
+                    <td style="border: 1px solid #000; padding: 4px; font-size: 10px; text-align: center;">
+                      <div style="font-size: 9px; color: #4b5563;">UF</div>
+                      <div>${clientData.uf}</div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="border: 1px solid #000; padding: 4px; font-size: 10px;" colspan="2">
+                      <div style="font-size: 9px; color: #4b5563;">Cidade</div>
+                      <div>${clientData.cidade}</div>
+                    </td>
+                    <td style="border: 1px solid #000; padding: 4px; font-size: 10px;" colspan="2">
+                      <div style="font-size: 9px; color: #4b5563;">Inscrição Estadual</div>
+                      <div>${clientData.inscricaoEstadual || '-'}</div>
+                    </td>
+                    <td style="border: 1px solid #000; padding: 4px; font-size: 10px;">
+                      <div style="font-size: 9px; color: #4b5563;">Telefone</div>
+                      <div>${clientData.telefone || '-'}</div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <!-- Contrato / Pagamento -->
+              <table style="margin-top: -1px;">
+                <tbody>
+                  <tr>
+                    <td style="border: 1px solid #000; padding: 4px; background-color: #f3f4f6; font-weight: bold; font-size: 10px; width: 25%;">CONTRATO</td>
+                    <td style="border: 1px solid #000; padding: 4px; background-color: #f3f4f6; font-weight: bold; font-size: 10px; width: 25%;">PAGAMENTO</td>
+                    <td style="border: 1px solid #000; padding: 4px; background-color: #f3f4f6; font-weight: bold; font-size: 10px;" colspan="2"></td>
+                  </tr>
+                  <tr>
+                    <td style="border: 1px solid #000; padding: 4px; font-size: 10px;">
+                      <div style="font-size: 9px; color: #4b5563;">Número</div>
+                      <div style="color: #2563eb;">Locação de Equipamentos</div>
+                    </td>
+                    <td style="border: 1px solid #000; padding: 4px; font-size: 10px;">
+                      <div style="font-size: 9px; color: #4b5563;">Forma de Pagamento</div>
+                      <div style="color: #dc2626; font-weight: bold;">R$ ${formatCurrency(valorTotal)}</div>
+                    </td>
+                    <td style="border: 1px solid #000; padding: 4px; font-size: 10px;" colspan="2">
+                      <div style="font-size: 9px; color: #4b5563;">Vencimento</div>
+                      <div>${vencimento}</div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <!-- Observação -->
+              <table style="margin-top: -1px;">
+                <tbody>
+                  <tr>
+                    <td style="border: 1px solid #000; padding: 4px; background-color: #f3f4f6; font-weight: bold; font-size: 10px;">OBSERVAÇÃO</td>
+                  </tr>
+                  <tr>
+                    <td style="border: 1px solid #000; padding: 8px; font-size: 10px;">
+                      <div style="font-size: 9px; color: #4b5563;">Condições de Pagamento:</div>
+                      <div style="font-weight: bold; margin-top: 4px;">BANCO DO BRASIL AG 052-3 C/C 51.592-2</div>
+                      <div style="font-weight: bold; margin-top: 4px;">PIX (CNPJ): ${CNPJ_PIX}</div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <!-- Dados da Locação -->
+              <table style="margin-top: -1px;">
+                <tbody>
+                  <tr>
+                    <td colspan="4" style="border: 1px solid #000; padding: 4px; background-color: #f3f4f6; font-weight: bold; font-size: 10px;">DADOS DA LOCAÇÃO - Período: ${rentalPeriod}</td>
+                  </tr>
+                  <tr style="background-color: #f9fafb;">
+                    <th style="border: 1px solid #000; padding: 4px; font-size: 10px; text-align: center; width: 60px;">QTD</th>
+                    <th style="border: 1px solid #000; padding: 4px; font-size: 10px; text-align: left;">Descrição / Configuração</th>
+                    <th style="border: 1px solid #000; padding: 4px; font-size: 10px; text-align: center; width: 80px;">Dias</th>
+                  </tr>
+                  ${equipamentos.map(equip => `
+                    <tr>
+                      <td style="border: 1px solid #000; padding: 4px; font-size: 10px; text-align: center;">${equip.quantity}</td>
+                      <td style="border: 1px solid #000; padding: 4px; font-size: 10px;">Locação de: ${equip.description}</td>
+                      <td style="border: 1px solid #000; padding: 4px; font-size: 10px; text-align: center;">${equip.days}</td>
+                    </tr>
+                  `).join('')}
+                  ${Array.from({ length: Math.max(0, 6 - equipamentos.length) }).map(() => `
+                    <tr>
+                      <td style="border: 1px solid #000; padding: 4px; font-size: 10px;" colspan="3">&nbsp;</td>
+                    </tr>
+                  `).join('')}
+                  <tr>
+                    <td style="border: 1px solid #000; padding: 8px; text-align: right; font-weight: bold; font-size: 12px;" colspan="2">Valor Total da Fatura:</td>
+                    <td style="border: 1px solid #000; padding: 8px; text-align: right; font-weight: bold; font-size: 16px;">${formatCurrency(valorTotal)}</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <!-- Footer -->
+              <table style="margin-top: -1px;">
+                <tbody>
+                  <tr>
+                    <td style="border: 1px solid #000; padding: 8px; font-size: 9px;" colspan="2">
+                      RECEBI(EMOS) DE <span style="color: #2563eb; font-weight: bold;">AV DESIGN</span>. AS LOCAÇÕES CONSTANTES NESSA FATURA INDICADA AO LADO
+                    </td>
+                    <td style="border: 1px solid #000; padding: 8px; text-align: right; font-weight: bold;" rowspan="2">
+                      <div>FATURA DE LOCAÇÃO</div>
+                      <div style="font-size: 18px; margin-top: 4px;">Nº: ${faturaNumber}</div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="border: 1px solid #000; padding: 8px; font-size: 9px; width: 25%;">
+                      <div style="background-color: #f3f4f6; padding: 4px; font-weight: bold;">DATA DO RECEBIMENTO</div>
+                    </td>
+                    <td style="border: 1px solid #000; padding: 8px; font-size: 9px;">
+                      <div style="background-color: #f3f4f6; padding: 4px; font-weight: bold;">IDENTIFICAÇÃO E ASSINATURA DO RECEBEDOR</div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </body>
+        </html>
+      `;
+
+      document.body.appendChild(tempDiv);
+
+      const options = {
+        margin: 10,
+        filename: `Fatura_${faturaNumber}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+
+      // Generate PDF and get as blob
+      const pdfBlob = await html2pdf().set(options).from(tempDiv).output('blob');
+
+      // Remove temp div
+      document.body.removeChild(tempDiv);
+
+      // Convert blob to base64
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const base64 = (reader.result as string).split(',')[1];
+          resolve(base64);
+        };
+        reader.readAsDataURL(pdfBlob);
+      });
+    } catch (error) {
+      console.error('Erro ao gerar PDF:', error);
+      return null;
+    }
+  };
+
+  // Send fatura via WhatsApp API with PDF attachment
   const sendFaturaWhatsApp = async (clientData: ClientData) => {
     setSending(true);
     const message = generateFaturaText(clientData);
-    console.log('Enviando mensagem WhatsApp...');
-    console.log('Payload:', { to: WHATSAPP_TO, message });
-    
+    console.log('Enviando mensagem e PDF WhatsApp...');
+
     try {
-      // Try with no-cors mode to bypass CORS restrictions
-      await fetch(WHATSAPP_API_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          to: WHATSAPP_TO,
-          message: message,
-        }),
-      });
-      
-      // With no-cors, we can't read the response, but the request is sent
-      console.log('Requisição enviada (no-cors mode)');
+      // Generate PDF
+      const pdfBase64 = await generatePDF(clientData);
+
+      if (pdfBase64) {
+        // Send PDF via WhatsApp API
+        const response = await fetch(WHATSAPP_API_PDF_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            to: WHATSAPP_TO,
+            message: `Nova Fatura Gerada!\n\n${message}`,
+            pdf: pdfBase64,
+            filename: `Fatura_${faturaNumber}.pdf`
+          }),
+        });
+
+        if (response.ok) {
+          console.log('PDF enviado via WhatsApp com sucesso');
+        } else {
+          console.error('Erro ao enviar PDF:', await response.text());
+        }
+      } else {
+        // Fallback to text message if PDF generation fails
+        const response = await fetch(WHATSAPP_API_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            to: WHATSAPP_TO,
+            message: message,
+          }),
+        });
+
+        if (response.ok) {
+          console.log('Mensagem de texto enviada com sucesso');
+        } else {
+          console.error('Erro ao enviar mensagem:', await response.text());
+        }
+      }
     } catch (error) {
       console.error('Erro ao enviar fatura:', error);
     } finally {
@@ -250,6 +543,10 @@ VALOR TOTAL DA FATURA: R$ ${formatCurrency(valorTotal)}`;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Save invoice number to localStorage for auto-increment
+    localStorage.setItem('lastInvoiceNumber', faturaNumber);
+
     // Send fatura copy via WhatsApp for tax purposes immediately with current client data
     sendFaturaWhatsApp(client);
     setStep('preview');
@@ -552,32 +849,34 @@ VALOR TOTAL DA FATURA: R$ ${formatCurrency(valorTotal)}`;
               </tbody>
             </table>
 
-            {/* Dados da Locação - Apenas lista de equipamentos */}
+            {/* Dados da Locação */}
             <table className="w-full border-collapse mt-[-1px]">
               <tbody>
                 <tr>
-                  <td colSpan={2} className="border border-black p-1 bg-gray-100 font-bold text-xs">DADOS DA LOCAÇÃO</td>
+                  <td colSpan={3} className="border border-black p-1 bg-gray-100 font-bold text-xs">DADOS DA LOCAÇÃO - Período: {rentalPeriod}</td>
                 </tr>
                 <tr className="bg-gray-50">
-                  <th className="border border-black p-1 text-[10px] text-left" colSpan={2}>Descrição / Configuração</th>
+                  <th className="border border-black p-1 text-[10px] text-center w-16">QTD</th>
+                  <th className="border border-black p-1 text-[10px] text-left">Descrição / Configuração</th>
+                  <th className="border border-black p-1 text-[10px] text-center w-20">Dias</th>
                 </tr>
                 {equipamentos.map((equip, index) => (
                   <tr key={index}>
-                    <td className="border border-black p-1 text-[10px]" colSpan={2}>
-                      Locação de: {equip}
-                    </td>
+                    <td className="border border-black p-1 text-[10px] text-center">{equip.quantity}</td>
+                    <td className="border border-black p-1 text-[10px]">Locação de: {equip.description}</td>
+                    <td className="border border-black p-1 text-[10px] text-center">{equip.days}</td>
                   </tr>
                 ))}
                 {/* Empty rows for spacing */}
                 {Array.from({ length: Math.max(0, 6 - equipamentos.length) }).map((_, i) => (
                   <tr key={`empty-${i}`}>
-                    <td className="border border-black p-1 text-[10px]" colSpan={2}>&nbsp;</td>
+                    <td className="border border-black p-1 text-[10px]" colSpan={3}>&nbsp;</td>
                   </tr>
                 ))}
                 {/* Total */}
                 <tr>
-                  <td className="border border-black p-2 text-right font-bold text-sm">Valor Total da Fatura:</td>
-                  <td className="border border-black p-2 text-right font-bold text-lg w-40">{formatCurrency(valorTotal)}</td>
+                  <td className="border border-black p-2 text-right font-bold text-sm" colSpan={2}>Valor Total da Fatura:</td>
+                  <td className="border border-black p-2 text-right font-bold text-lg">{formatCurrency(valorTotal)}</td>
                 </tr>
               </tbody>
             </table>

@@ -14,18 +14,44 @@ const App: React.FC = () => {
     window.print();
   };
 
-  // Dados da fatura - apenas equipamentos (sem serviços com valores unitários)
+  // Get next invoice number from localStorage
+  const getNextInvoiceNumber = () => {
+    const lastNumber = localStorage.getItem('lastInvoiceNumber');
+    if (!lastNumber) return '000053';
+
+    const nextNum = parseInt(lastNumber) + 1;
+    return nextNum.toString().padStart(6, '0');
+  };
+
+  // Dados da fatura - equipamentos com quantidade e dias
   const faturaData = {
-    faturaNumber: '000052',
-    emissionDate: '02/12/2025',
+    faturaNumber: getNextInvoiceNumber(),
+    emissionDate: new Date().toLocaleDateString('pt-BR'),
+    rentalPeriod: '3 dias',
     equipamentos: [
-      'Projetor Panasonic PT-RZ21KU',
-      'Lente Panasonic 21K ET-D75LE90 fixa (0.36:1)',
-      'Licença Resolume 6',
-      'Notebook Dell Gamer G5 i7 2.9 GHz',
+      {
+        quantity: 2,
+        description: 'Projetor Panasonic PT-RZ990',
+        days: 3
+      },
+      {
+        quantity: 2,
+        description: 'Lente ET-DLE020 Ultra-Short-Throw Zoom',
+        days: 3
+      },
+      {
+        quantity: 1,
+        description: 'Licença Resolume 6',
+        days: 3
+      },
+      {
+        quantity: 1,
+        description: 'Notebook Dell Gamer G5 i7 2.9 GHz',
+        days: 3
+      },
     ],
-    valorTotal: 13600.00,
-    vencimento: 'A vista - R$ 13.600,00',
+    valorTotal: 28200.00,
+    vencimento: 'A vista - R$ 28.200,00',
   };
 
   return (
