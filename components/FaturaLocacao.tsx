@@ -360,47 +360,47 @@ VALOR TOTAL DA FATURA: R$ ${formatCurrency(valorTotal)}`;
   const sendFaturaWhatsApp = async (clientData: ClientData) => {
     setSending(true);
     const message = generateFaturaText(clientData);
-    console.log('Enviando mensagem e PDF WhatsApp...');
+    console.log('🔄 Iniciando envio para WhatsApp...');
 
     try {
       // Generate PDF
+      console.log('📄 Gerando PDF...');
       const pdfBase64 = await generatePDF(clientData);
 
-      if (pdfBase64) {
-        // Send PDF via WhatsApp API (using no-cors mode for cross-origin)
-        await fetch(WHATSAPP_API_PDF_URL, {
-          method: 'POST',
-          mode: 'no-cors', // Required for HTTP API from HTTPS site
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            to: WHATSAPP_TO,
-            message: `Nova Fatura Gerada!\n\n${message}`,
-            pdf: pdfBase64,
-            filename: `Fatura_${faturaNumber}.pdf`
-          }),
-        });
-
-        console.log('PDF enviado via WhatsApp (no-cors mode)');
-      } else {
-        // Fallback to text message if PDF generation fails
-        await fetch(WHATSAPP_API_URL, {
-          method: 'POST',
-          mode: 'no-cors', // Required for HTTP API from HTTPS site
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            to: WHATSAPP_TO,
-            message: message,
-          }),
-        });
-
-        console.log('Mensagem de texto enviada (no-cors mode)');
+      if (!pdfBase64) {
+        console.error('❌ Falha ao gerar PDF');
+        setSending(false);
+        return;
       }
+
+      console.log('✅ PDF gerado com sucesso. Tamanho:', pdfBase64.length, 'bytes');
+
+      // Send PDF via WhatsApp API
+      console.log('📤 Enviando PDF para:', WHATSAPP_API_PDF_URL);
+
+      const payload = {
+        to: WHATSAPP_TO,
+        message: `Nova Fatura Gerada!\n\n${message}`,
+        pdf: pdfBase64,
+        filename: `Fatura_${faturaNumber}.pdf`
+      };
+
+      console.log('📦 Payload preparado. Tamanho do PDF:', pdfBase64.length);
+
+      const response = await fetch(WHATSAPP_API_PDF_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      console.log('✅ Requisição enviada para WhatsApp API');
+      console.log('📱 Verifique seu WhatsApp em alguns segundos...');
+
     } catch (error) {
-      console.error('Erro ao enviar fatura:', error);
+      console.error('❌ Erro ao enviar fatura:', error);
+      alert('Erro ao enviar fatura via WhatsApp. Verifique o console para mais detalhes.');
     } finally {
       setSending(false);
     }
