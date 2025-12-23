@@ -10,7 +10,7 @@ import { Printer, FileText } from 'lucide-react';
 const App: React.FC = () => {
   const [showFatura, setShowFatura] = useState(false);
   const [faturaData, setFaturaData] = useState({
-    faturaNumber: '000053',
+    faturaNumber: '000101',
     emissionDate: new Date().toLocaleDateString('pt-BR'),
     rentalPeriod: '3 dias',
     equipamentos: [
@@ -43,10 +43,10 @@ const App: React.FC = () => {
     window.print();
   };
 
-  // Get next invoice number from localStorage
+  // Get next invoice number from localStorage (starts at 101)
   const getNextInvoiceNumber = () => {
     const lastNumber = localStorage.getItem('lastInvoiceNumber');
-    if (!lastNumber) return '000053';
+    if (!lastNumber) return '000101';
 
     const nextNum = parseInt(lastNumber) + 1;
     return nextNum.toString().padStart(6, '0');
