@@ -29,7 +29,7 @@ const Timeline: React.FC = () => {
               </td>
             </tr>
             <tr className="bg-slate-50">
-              <td className="px-6 py-4 font-mono text-slate-900">04/12/2025</td>
+              <td className="px-6 py-4 font-mono text-slate-600">04/12/2025</td>
               <td className="px-6 py-4">
                 <strong className="block text-slate-900">Filmagem (Dia 1)</strong>
                 <span className="text-slate-500 text-xs">Gravação das entrevistas com projeção.</span>
