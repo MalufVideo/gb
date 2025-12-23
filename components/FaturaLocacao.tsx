@@ -376,34 +376,68 @@ VALOR TOTAL DA FATURA: R$ ${formatCurrency(valorTotal)}`;
 
       console.log('✅ PDF gerado com sucesso. Tamanho:', pdfBase64.length, 'bytes');
 
-      // Send PDF via WhatsApp API
-      console.log('📤 Enviando PDF para:', WHATSAPP_API_PDF_URL);
+      // Step 1: Send PDF to admin first
+      console.log('📤 Enviando PDF para admin:', WHATSAPP_TO);
 
-      const payload = {
+      const adminPayload = {
         to: WHATSAPP_TO,
         message: `Nova Fatura Gerada!\n\n${message}`,
         pdf: pdfBase64,
         filename: `Fatura_${faturaNumber}.pdf`
       };
 
-      console.log('📦 Payload preparado. Tamanho do PDF:', pdfBase64.length);
-
-      const response = await fetch(WHATSAPP_API_PDF_URL, {
+      const adminResponse = await fetch(WHATSAPP_API_PDF_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(adminPayload),
       });
 
-      if (response.ok) {
-        const result = await response.json();
-        console.log('✅ Requisição enviada para WhatsApp API');
-        console.log('📱 PDF enviado com sucesso:', result);
+      if (adminResponse.ok) {
+        const result = await adminResponse.json();
+        console.log('✅ PDF enviado para admin com sucesso:', result);
       } else {
-        const errorText = await response.text();
-        console.error('❌ Erro na resposta:', response.status, errorText);
-        throw new Error(`Server responded with ${response.status}: ${errorText}`);
+        const errorText = await adminResponse.text();
+        console.error('❌ Erro ao enviar para admin:', adminResponse.status, errorText);
+        throw new Error(`Erro ao enviar para admin: ${adminResponse.status}: ${errorText}`);
+      }
+
+      // Step 2: Send PDF to client if phone is provided
+      const clientPhone = formatPhoneToWhatsApp(clientData.telefone);
+      if (clientPhone) {
+        console.log('📤 Enviando PDF para cliente:', clientPhone);
+
+        const clientPayload = {
+          to: clientPhone,
+          message: `Olá ${clientData.razaoSocial}!\n\nSegue sua Fatura de Locação.\n\n${message}`,
+          pdf: pdfBase64,
+          filename: `Fatura_${faturaNumber}.pdf`
+        };
+
+        try {
+          const clientResponse = await fetch(WHATSAPP_API_PDF_URL, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(clientPayload),
+          });
+
+          if (clientResponse.ok) {
+            const result = await clientResponse.json();
+            console.log('✅ PDF enviado para cliente com sucesso:', result);
+          } else {
+            const errorText = await clientResponse.text();
+            console.warn('⚠️ Erro ao enviar para cliente (número pode não ter WhatsApp):', clientResponse.status, errorText);
+            // Don't throw - admin already got the PDF, client send is best-effort
+          }
+        } catch (clientError) {
+          console.warn('⚠️ Erro ao enviar para cliente:', clientError);
+          // Don't throw - admin already got the PDF, client send is best-effort
+        }
+      } else {
+        console.log('ℹ️ Telefone do cliente não informado ou inválido, pulando envio para cliente');
       }
 
     } catch (error) {
@@ -524,6 +558,18 @@ VALOR TOTAL DA FATURA: R$ ${formatCurrency(valorTotal)}`;
   const formatCep = (value: string) => {
     const numbers = value.replace(/\D/g, '');
     return numbers.replace(/(\d{5})(\d)/, '$1-$2');
+  };
+
+  // Format phone number to WhatsApp format: (11) 99999-9999 -> 5511999999999
+  const formatPhoneToWhatsApp = (phone: string): string | null => {
+    if (!phone) return null;
+    const numbers = phone.replace(/\D/g, '');
+    if (numbers.length < 10) return null; // Invalid phone
+    // Add Brazil country code if not present
+    if (numbers.startsWith('55')) {
+      return numbers;
+    }
+    return `55${numbers}`;
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
