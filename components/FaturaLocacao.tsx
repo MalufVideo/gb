@@ -32,8 +32,9 @@ interface FaturaLocacaoProps {
 }
 
 const CNPJ_PIX = '07.622.875/0001-74';
-const WHATSAPP_API_URL = 'http://72.60.142.28:3000/send';
-const WHATSAPP_API_PDF_URL = 'http://72.60.142.28:3000/send-pdf';
+// Use relative URLs that proxy through our server to avoid mixed content issues
+const WHATSAPP_API_URL = '/api/send';
+const WHATSAPP_API_PDF_URL = '/api/send-pdf';
 const WHATSAPP_TO = '5519981454647';
 
 const FaturaLocacao: React.FC<FaturaLocacaoProps> = ({
@@ -389,15 +390,21 @@ VALOR TOTAL DA FATURA: R$ ${formatCurrency(valorTotal)}`;
 
       const response = await fetch(WHATSAPP_API_PDF_URL, {
         method: 'POST',
-        mode: 'no-cors', // Required for HTTPS → HTTP (mixed content)
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(payload),
       });
 
-      console.log('✅ Requisição enviada para WhatsApp API');
-      console.log('📱 Verifique seu WhatsApp em alguns segundos...');
+      if (response.ok) {
+        const result = await response.json();
+        console.log('✅ Requisição enviada para WhatsApp API');
+        console.log('📱 PDF enviado com sucesso:', result);
+      } else {
+        const errorText = await response.text();
+        console.error('❌ Erro na resposta:', response.status, errorText);
+        throw new Error(`Server responded with ${response.status}: ${errorText}`);
+      }
 
     } catch (error) {
       console.error('❌ Erro ao enviar fatura:', error);
