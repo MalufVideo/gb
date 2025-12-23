@@ -389,6 +389,7 @@ VALOR TOTAL DA FATURA: R$ ${formatCurrency(valorTotal)}`;
 
       const response = await fetch(WHATSAPP_API_PDF_URL, {
         method: 'POST',
+        mode: 'no-cors', // Required for HTTPS → HTTP (mixed content)
         headers: {
           'Content-Type': 'application/json',
         },
