@@ -9,23 +9,8 @@ import { Printer, FileText } from 'lucide-react';
 
 const App: React.FC = () => {
   const [showFatura, setShowFatura] = useState(false);
-
-  const handlePrint = () => {
-    window.print();
-  };
-
-  // Get next invoice number from localStorage
-  const getNextInvoiceNumber = () => {
-    const lastNumber = localStorage.getItem('lastInvoiceNumber');
-    if (!lastNumber) return '000053';
-
-    const nextNum = parseInt(lastNumber) + 1;
-    return nextNum.toString().padStart(6, '0');
-  };
-
-  // Dados da fatura - equipamentos com quantidade e dias
-  const faturaData = {
-    faturaNumber: getNextInvoiceNumber(),
+  const [faturaData, setFaturaData] = useState({
+    faturaNumber: '000053',
     emissionDate: new Date().toLocaleDateString('pt-BR'),
     rentalPeriod: '3 dias',
     equipamentos: [
@@ -52,6 +37,29 @@ const App: React.FC = () => {
     ],
     valorTotal: 28200.00,
     vencimento: 'A vista - R$ 28.200,00',
+  });
+
+  const handlePrint = () => {
+    window.print();
+  };
+
+  // Get next invoice number from localStorage
+  const getNextInvoiceNumber = () => {
+    const lastNumber = localStorage.getItem('lastInvoiceNumber');
+    if (!lastNumber) return '000053';
+
+    const nextNum = parseInt(lastNumber) + 1;
+    return nextNum.toString().padStart(6, '0');
+  };
+
+  // Open modal and generate new invoice number
+  const handleOpenFatura = () => {
+    setFaturaData(prev => ({
+      ...prev,
+      faturaNumber: getNextInvoiceNumber(),
+      emissionDate: new Date().toLocaleDateString('pt-BR'),
+    }));
+    setShowFatura(true);
   };
 
   return (
@@ -78,7 +86,7 @@ const App: React.FC = () => {
             {/* Gerar Fatura Button */}
             <div className="no-print flex justify-center pt-4">
               <button
-                onClick={() => setShowFatura(true)}
+                onClick={handleOpenFatura}
                 className="bg-brand-accent text-white px-6 py-3 rounded-lg shadow-lg hover:bg-amber-600 transition-colors flex items-center gap-2 font-bold text-sm uppercase tracking-wide"
               >
                 <FileText size={18} />

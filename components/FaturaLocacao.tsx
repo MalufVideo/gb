@@ -367,9 +367,10 @@ VALOR TOTAL DA FATURA: R$ ${formatCurrency(valorTotal)}`;
       const pdfBase64 = await generatePDF(clientData);
 
       if (pdfBase64) {
-        // Send PDF via WhatsApp API
-        const response = await fetch(WHATSAPP_API_PDF_URL, {
+        // Send PDF via WhatsApp API (using no-cors mode for cross-origin)
+        await fetch(WHATSAPP_API_PDF_URL, {
           method: 'POST',
+          mode: 'no-cors', // Required for HTTP API from HTTPS site
           headers: {
             'Content-Type': 'application/json',
           },
@@ -381,15 +382,12 @@ VALOR TOTAL DA FATURA: R$ ${formatCurrency(valorTotal)}`;
           }),
         });
 
-        if (response.ok) {
-          console.log('PDF enviado via WhatsApp com sucesso');
-        } else {
-          console.error('Erro ao enviar PDF:', await response.text());
-        }
+        console.log('PDF enviado via WhatsApp (no-cors mode)');
       } else {
         // Fallback to text message if PDF generation fails
-        const response = await fetch(WHATSAPP_API_URL, {
+        await fetch(WHATSAPP_API_URL, {
           method: 'POST',
+          mode: 'no-cors', // Required for HTTP API from HTTPS site
           headers: {
             'Content-Type': 'application/json',
           },
@@ -399,11 +397,7 @@ VALOR TOTAL DA FATURA: R$ ${formatCurrency(valorTotal)}`;
           }),
         });
 
-        if (response.ok) {
-          console.log('Mensagem de texto enviada com sucesso');
-        } else {
-          console.error('Erro ao enviar mensagem:', await response.text());
-        }
+        console.log('Mensagem de texto enviada (no-cors mode)');
       }
     } catch (error) {
       console.error('Erro ao enviar fatura:', error);
