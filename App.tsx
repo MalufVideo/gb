@@ -17,16 +17,16 @@ const App: React.FC = () => {
       {
         quantity: 2,
         description: 'Projetor Panasonic PT-RZ990',
-        days: 3
+        days: 2
       },
       {
         quantity: 2,
-        description: 'Lente ET-DLE020 Ultra-Short-Throw Zoom',
-        days: 3
+        description: 'LENTE PANASONIC ET-DLE20 (0.28–0.30:1)',
+        days: 2
       },
       {
         quantity: 1,
-        description: 'Licença Resolume 6',
+        description: 'Licença Resolume',
         days: 3
       },
       {
@@ -34,9 +34,19 @@ const App: React.FC = () => {
         description: 'Notebook Dell Gamer G5 i7 2.9 GHz',
         days: 3
       },
+      {
+        quantity: 1,
+        description: 'TV de 70" 4K',
+        days: 3
+      },
+      {
+        quantity: 1,
+        description: 'Pedestal',
+        days: 3
+      }
     ],
-    valorTotal: 28200.00,
-    vencimento: 'A vista - R$ 28.200,00',
+    valorTotal: 31400.00,
+    vencimento: 'A vista - R$ 31.400,00',
   });
 
   const handlePrint = () => {
